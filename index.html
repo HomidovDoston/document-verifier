@@ -1,270 +1,349 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uz">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hujjatni tasdiqlash</title>
-<style>
-  :root {
-    --gov-blue: #1a4d8f;
-    --gov-blue-dark: #0f3566;
-    --ok-green: #1e7e34;
-    --ok-green-bg: #e8f5e9;
-    --err-red: #b02a2a;
-    --err-red-bg: #fdecea;
-    --paper: #ffffff;
-    --bg: #eef1f5;
-    --text: #1f2937;
-    --muted: #667085;
-    --border: #dfe3e8;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px 14px;
-  }
-  .wrap { max-width: 640px; margin: 0 auto; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hujjatni tasdiqlash</title>
+    <style>
+      :root {
+        --gov-blue: #1a4d8f;
+        --gov-blue-dark: #0f3566;
+        --ok-green: #1e7e34;
+        --ok-green-bg: #e8f5e9;
+        --err-red: #b02a2a;
+        --err-red-bg: #fdecea;
+        --paper: #ffffff;
+        --bg: #eef1f5;
+        --text: #1f2937;
+        --muted: #667085;
+        --border: #dfe3e8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 24px 14px;
+      }
+      .wrap {
+        max-width: 640px;
+        margin: 0 auto;
+      }
 
-  .status-banner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 18px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 18px;
-  }
-  .status-banner.ok { background: var(--ok-green-bg); color: var(--ok-green); border: 1px solid #b7ddbb; }
-  .status-banner.err { background: var(--err-red-bg); color: var(--err-red); border: 1px solid #f0c2c2; }
-  .status-banner.loading { background: #eef2f7; color: var(--muted); border: 1px solid var(--border); }
-  .status-icon { font-size: 22px; line-height: 1; }
+      .status-banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 18px;
+      }
+      .status-banner.ok {
+        background: var(--ok-green-bg);
+        color: var(--ok-green);
+        border: 1px solid #b7ddbb;
+      }
+      .status-banner.err {
+        background: var(--err-red-bg);
+        color: var(--err-red);
+        border: 1px solid #f0c2c2;
+      }
+      .status-banner.loading {
+        background: #eef2f7;
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+      .status-icon {
+        font-size: 22px;
+        line-height: 1;
+      }
 
-  .card {
-    background: var(--paper);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(16,24,40,0.08), 0 1px 2px rgba(16,24,40,0.04);
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .card-header {
-    background: var(--gov-blue);
-    color: white;
-    padding: 20px 24px;
-    text-align: center;
-  }
-  .card-header .org { font-size: 13px; opacity: 0.85; letter-spacing: 0.3px; text-transform: uppercase; }
-  .card-header .title { font-size: 19px; font-weight: 700; margin-top: 6px; line-height: 1.35; }
-  .card-header .doc-id { font-size: 12px; opacity: 0.8; margin-top: 10px; font-family: "SF Mono", Consolas, monospace; }
+      .card {
+        background: var(--paper);
+        border-radius: 12px;
+        box-shadow:
+          0 1px 3px rgba(16, 24, 40, 0.08),
+          0 1px 2px rgba(16, 24, 40, 0.04);
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .card-header {
+        background: var(--gov-blue);
+        color: white;
+        padding: 20px 24px;
+        text-align: center;
+      }
+      .card-header .org {
+        font-size: 13px;
+        opacity: 0.85;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .card-header .title {
+        font-size: 19px;
+        font-weight: 700;
+        margin-top: 6px;
+        line-height: 1.35;
+      }
+      .card-header .doc-id {
+        font-size: 12px;
+        opacity: 0.8;
+        margin-top: 10px;
+        font-family: "SF Mono", Consolas, monospace;
+      }
 
-  .fields { padding: 8px 0; }
-  .field-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 13px 24px;
-    border-bottom: 1px solid var(--border);
-    font-size: 14.5px;
-  }
-  .field-row:last-child { border-bottom: none; }
-  .field-label { color: var(--muted); flex: 0 0 42%; }
-  .field-value { font-weight: 600; text-align: right; flex: 1; }
+      .fields {
+        padding: 8px 0;
+      }
+      .field-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 13px 24px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14.5px;
+      }
+      .field-row:last-child {
+        border-bottom: none;
+      }
+      .field-label {
+        color: var(--muted);
+        flex: 0 0 42%;
+      }
+      .field-value {
+        font-weight: 600;
+        text-align: right;
+        flex: 1;
+      }
 
-  .card-footer {
-    padding: 16px 24px 22px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 12.5px;
-    border-top: 1px dashed var(--border);
-  }
+      .card-footer {
+        padding: 16px 24px 22px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12.5px;
+        border-top: 1px dashed var(--border);
+      }
 
-  .raw-toggle {
-    display: block;
-    text-align: center;
-    margin-top: 16px;
-    font-size: 12.5px;
-    color: var(--muted);
-    text-decoration: underline;
-    cursor: pointer;
-    background: none;
-    border: none;
-    width: 100%;
-  }
-  pre#rawData {
-    display: none;
-    background: #0f172a;
-    color: #d1e7ff;
-    padding: 14px;
-    border-radius: 8px;
-    font-size: 11.5px;
-    overflow-x: auto;
-    margin-top: 10px;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
+      .raw-toggle {
+        display: block;
+        text-align: center;
+        margin-top: 16px;
+        font-size: 12.5px;
+        color: var(--muted);
+        text-decoration: underline;
+        cursor: pointer;
+        background: none;
+        border: none;
+        width: 100%;
+      }
+      pre#rawData {
+        display: none;
+        background: #0f172a;
+        color: #d1e7ff;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 11.5px;
+        overflow-x: auto;
+        margin-top: 10px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div id="banner" class="status-banner loading">
+        <span class="status-icon">⏳</span>
+        <span id="bannerText">Hujjat tekshirilmoqda...</span>
+      </div>
 
-  <div id="banner" class="status-banner loading">
-    <span class="status-icon">⏳</span>
-    <span id="bannerText">Hujjat tekshirilmoqda...</span>
-  </div>
+      <div class="card" id="card" style="display: none">
+        <div class="card-header">
+          <div class="org">Elektron hujjat tasdiqlash tizimi</div>
+          <div class="title" id="docTitle">Hujjat</div>
+          <div class="doc-id" id="docId"></div>
+        </div>
+        <div class="fields" id="fieldsList"></div>
+        <div class="card-footer">
+          Ushbu ma'lumot raqamli imzo bilan tasdiqlangan va o'zgartirilmagan.<br />
+          Tekshiruv vaqti: <span id="checkedAt"></span>
+        </div>
+      </div>
 
-  <div class="card" id="card" style="display:none;">
-    <div class="card-header">
-      <div class="org">Elektron hujjat tasdiqlash tizimi</div>
-      <div class="title" id="docTitle">Hujjat</div>
-      <div class="doc-id" id="docId"></div>
+      <button class="raw-toggle" id="rawToggle" style="display: none">
+        Texnik ma'lumotni ko'rsatish
+      </button>
+      <pre id="rawData"></pre>
     </div>
-    <div class="fields" id="fieldsList"></div>
-    <div class="card-footer">
-      Ushbu ma'lumot raqamli imzo bilan tasdiqlangan va o'zgartirilmagan.<br>
-      Tekshiruv vaqti: <span id="checkedAt"></span>
-    </div>
-  </div>
 
-  <button class="raw-toggle" id="rawToggle" style="display:none;">Texnik ma'lumotni ko'rsatish</button>
-  <pre id="rawData"></pre>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script>
+      // ====== O'ZGARTIRISH KERAK BO'LGAN JOY: ochiq kalit (public key JWK) ======
+      // Bu kalit generate_hujjat.py bilan bir xil kalit juftligidan (public_key_jwk.json) olinishi shart.
+      const PUBLIC_KEY_JWK = {
+        kty: "RSA",
+        n: "tcFkXjSg1DAEEhSTgswo1mu_LVHlpnfwycyw02TKFGjI_mb6QLntEqxHI68cG7WsyvBIYEs7g_B8M133Wcw6PGbX-FGc8AoOx2AOO3GoFPEON-E42rrsaYilLu9Wo2JkoR_ejTP1nIaOrztDPTURSJGw0R6Ryvxns0jhzmuBWcsQHj0ed3AnC5bMscaMVvisuZqxB0snZ5HbDQLH2lYpfjYC_KQ9KlE3yr5quzeGwWPU7fTuTQabpJ6uM2FrWlI6x1b2zkMgqWEbY8Xi22Qf5hzoBPI8I4iNXaHZaGyDWDvEfMpGceEMUPGNbNwnYBsAuAWg1HY60gDzrOpwP2I19Q",
+        e: "AQAB",
+        alg: "PS256",
+        ext: true,
+        key_ops: ["verify"],
+      };
 
-</div>
+      // Maydon kalitlarini o'qiladigan nomlarga moslashtirish (kerak bo'lsa qo'shimcha qo'shing)
+      const FIELD_LABELS = {
+        hujjat_raqami: "Hujjat raqami",
+        sana: "Berilgan sana",
+        fish: "F.I.SH.",
+        tugilgan_sana: "Tug'ilgan sanasi",
+        fuqaroligi: "Fuqaroligi",
+        otm: "OTM / Tashkilot",
+        kafedra: "Bo'lim / Kafedra",
+        lavozim: "Lavozim",
+        xodim_turi: "Xodim turi",
+        mehnat_shakli: "Mehnat shakli",
+        stavka: "Stavka",
+        status: "Status",
+      };
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
-<script>
-// ====== O'ZGARTIRISH KERAK BO'LGAN JOY: ochiq kalit (public key JWK) ======
-// Bu kalit generate_hujjat.py bilan bir xil kalit juftligidan (public_key_jwk.json) olinishi shart.
-const PUBLIC_KEY_JWK = {
-  "kty": "RSA",
-  "n": "tcFkXjSg1DAEEhSTgswo1mu_LVHlpnfwycyw02TKFGjI_mb6QLntEqxHI68cG7WsyvBIYEs7g_B8M133Wcw6PGbX-FGc8AoOx2AOO3GoFPEON-E42rrsaYilLu9Wo2JkoR_ejTP1nIaOrztDPTURSJGw0R6Ryvxns0jhzmuBWcsQHj0ed3AnC5bMscaMVvisuZqxB0snZ5HbDQLH2lYpfjYC_KQ9KlE3yr5quzeGwWPU7fTuTQabpJ6uM2FrWlI6x1b2zkMgqWEbY8Xi22Qf5hzoBPI8I4iNXaHZaGyDWDvEfMpGceEMUPGNbNwnYBsAuAWg1HY60gDzrOpwP2I19Q",
-  "e": "AQAB",
-  "alg": "PS256",
-  "ext": true,
-  "key_ops": ["verify"]
-};
+      function base64UrlToBytes(b64url) {
+        let b64 = b64url.replace(/-/g, "+").replace(/_/g, "/");
+        while (b64.length % 4) b64 += "=";
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return bytes;
+      }
 
-// Maydon kalitlarini o'qiladigan nomlarga moslashtirish (kerak bo'lsa qo'shimcha qo'shing)
-const FIELD_LABELS = {
-  "hujjat_raqami": "Hujjat raqami",
-  "sana": "Berilgan sana",
-  "fish": "F.I.SH.",
-  "tugilgan_sana": "Tug'ilgan sanasi",
-  "fuqaroligi": "Fuqaroligi",
-  "otm": "OTM / Tashkilot",
-  "kafedra": "Bo'lim / Kafedra",
-  "lavozim": "Lavozim",
-  "xodim_turi": "Xodim turi",
-  "mehnat_shakli": "Mehnat shakli",
-  "stavka": "Stavka",
-  "status": "Status"
-};
+      function showBanner(kind, text, icon) {
+        const banner = document.getElementById("banner");
+        banner.className = "status-banner " + kind;
+        document.getElementById("bannerText").textContent = text;
+        document.querySelector(".status-icon").textContent = icon;
+      }
 
-function base64UrlToBytes(b64url) {
-  let b64 = b64url.replace(/-/g, "+").replace(/_/g, "/");
-  while (b64.length % 4) b64 += "=";
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
-}
+      async function verifySignature(docHashHex, signatureB64) {
+        const key = await crypto.subtle.importKey(
+          "jwk",
+          PUBLIC_KEY_JWK,
+          { name: "RSA-PSS", hash: "SHA-256" },
+          false,
+          ["verify"],
+        );
+        const sigBytes = base64UrlToBytes(
+          signatureB64.replace(/\+/g, "-").replace(/\//g, "_"),
+        );
+        const dataBytes = new TextEncoder().encode(docHashHex);
+        return crypto.subtle.verify(
+          { name: "RSA-PSS", saltLength: 32 },
+          key,
+          sigBytes,
+          dataBytes,
+        );
+      }
 
-function showBanner(kind, text, icon) {
-  const banner = document.getElementById("banner");
-  banner.className = "status-banner " + kind;
-  document.getElementById("bannerText").textContent = text;
-  document.querySelector(".status-icon").textContent = icon;
-}
+      async function sha256Hex(text) {
+        const data = new TextEncoder().encode(text);
+        const digest = await crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(digest))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
 
-async function verifySignature(docHashHex, signatureB64) {
-  const key = await crypto.subtle.importKey(
-    "jwk",
-    PUBLIC_KEY_JWK,
-    { name: "RSA-PSS", hash: "SHA-256" },
-    false,
-    ["verify"]
-  );
-  const sigBytes = base64UrlToBytes(signatureB64.replace(/\+/g, "-").replace(/\//g, "_"));
-  const dataBytes = new TextEncoder().encode(docHashHex);
-  return crypto.subtle.verify({ name: "RSA-PSS", saltLength: 32 }, key, sigBytes, dataBytes);
-}
+      function canonicalJson(obj) {
+        // Python: json.dumps(obj, ensure_ascii=False, separators=(",", ":")) bilan bir xil natija
+        return JSON.stringify(obj);
+      }
 
-async function sha256Hex(text) {
-  const data = new TextEncoder().encode(text);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
+      function renderFields(fields) {
+        const list = document.getElementById("fieldsList");
+        list.innerHTML = "";
+        for (const [key, value] of Object.entries(fields)) {
+          const label = FIELD_LABELS[key] || key;
+          const row = document.createElement("div");
+          row.className = "field-row";
+          row.innerHTML = `<span class="field-label">${label}</span><span class="field-value"></span>`;
+          row.querySelector(".field-value").textContent = value;
+          list.appendChild(row);
+        }
+      }
 
-function canonicalJson(obj) {
-  // Python: json.dumps(obj, ensure_ascii=False, separators=(",", ":")) bilan bir xil natija
-  return JSON.stringify(obj);
-}
+      async function main() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const d = params.get("d");
+          if (!d) {
+            showBanner(
+              "err",
+              "Ma'lumot topilmadi. QR kod noto'g'ri yoki buzilgan.",
+              "✕",
+            );
+            return;
+          }
 
-function renderFields(fields) {
-  const list = document.getElementById("fieldsList");
-  list.innerHTML = "";
-  for (const [key, value] of Object.entries(fields)) {
-    const label = FIELD_LABELS[key] || key;
-    const row = document.createElement("div");
-    row.className = "field-row";
-    row.innerHTML = `<span class="field-label">${label}</span><span class="field-value"></span>`;
-    row.querySelector(".field-value").textContent = value;
-    list.appendChild(row);
-  }
-}
+          const compressed = base64UrlToBytes(d);
+          const inflated = pako.inflate(compressed);
+          const jsonText = new TextDecoder("utf-8").decode(inflated);
+          console.log("JSON TEXT:", jsonText);
+          const pkg = JSON.parse(jsonText);
 
-async function main() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const d = params.get("d");
-    if (!d) {
-      showBanner("err", "Ma'lumot topilmadi. QR kod noto'g'ri yoki buzilgan.", "✕");
-      return;
-    }
+          document.getElementById("rawData").textContent = JSON.stringify(
+            pkg,
+            null,
+            2,
+          );
+          document.getElementById("rawToggle").style.display = "block";
+          document.getElementById("rawToggle").onclick = () => {
+            const pre = document.getElementById("rawData");
+            pre.style.display =
+              pre.style.display === "block" ? "none" : "block";
+          };
 
-    const compressed = base64UrlToBytes(d);
-    const inflated = pako.inflate(compressed);
-    const jsonText = new TextDecoder("utf-8").decode(inflated);
-    const pkg = JSON.parse(jsonText);
+          // 1) Maydonlardan hashni qayta hisoblab, o'zgartirilmaganini tekshiramiz
+          const recomputedHash = await sha256Hex(canonicalJson(pkg.fields));
+          if (recomputedHash !== pkg.hash) {
+            showBanner(
+              "err",
+              "Hujjat ma'lumotlari o'zgartirilgan! Hash mos kelmadi.",
+              "✕",
+            );
+            return;
+          }
 
-    document.getElementById("rawData").textContent = JSON.stringify(pkg, null, 2);
-    document.getElementById("rawToggle").style.display = "block";
-    document.getElementById("rawToggle").onclick = () => {
-      const pre = document.getElementById("rawData");
-      pre.style.display = pre.style.display === "block" ? "none" : "block";
-    };
+          // 2) Raqamli imzoni ochiq kalit bilan tekshiramiz
+          const validSignature = await verifySignature(pkg.hash, pkg.sig);
+          if (!validSignature) {
+            showBanner(
+              "err",
+              "Raqamli imzo YAROQSIZ. Hujjat soxta bo'lishi mumkin.",
+              "✕",
+            );
+            return;
+          }
 
-    // 1) Maydonlardan hashni qayta hisoblab, o'zgartirilmaganini tekshiramiz
-    const recomputedHash = await sha256Hex(canonicalJson(pkg.fields));
-    if (recomputedHash !== pkg.hash) {
-      showBanner("err", "Hujjat ma'lumotlari o'zgartirilgan! Hash mos kelmadi.", "✕");
-      return;
-    }
+          showBanner("ok", "Hujjat haqiqiy va tasdiqlangan", "✓");
 
-    // 2) Raqamli imzoni ochiq kalit bilan tekshiramiz
-    const validSignature = await verifySignature(pkg.hash, pkg.sig);
-    if (!validSignature) {
-      showBanner("err", "Raqamli imzo YAROQSIZ. Hujjat soxta bo'lishi mumkin.", "✕");
-      return;
-    }
+          document.getElementById("docId").textContent = "Hujjat ID: " + pkg.id;
+          renderFields(pkg.fields);
+          document.getElementById("checkedAt").textContent =
+            new Date().toLocaleString("uz-UZ");
+          document.getElementById("card").style.display = "block";
+        } catch (err) {
+          console.error(err);
+          showBanner(
+            "err",
+            "Tekshirishda xatolik yuz berdi. QR kod buzilgan bo'lishi mumkin.",
+            "✕",
+          );
+        }
+      }
 
-    showBanner("ok", "Hujjat haqiqiy va tasdiqlangan", "✓");
-
-    document.getElementById("docId").textContent = "Hujjat ID: " + pkg.id;
-    renderFields(pkg.fields);
-    document.getElementById("checkedAt").textContent = new Date().toLocaleString("uz-UZ");
-    document.getElementById("card").style.display = "block";
-
-  } catch (err) {
-    console.error(err);
-    showBanner("err", "Tekshirishda xatolik yuz berdi. QR kod buzilgan bo'lishi mumkin.", "✕");
-  }
-}
-
-main();
-</script>
-</body>
+      main();
+    </script>
+  </body>
 </html>
