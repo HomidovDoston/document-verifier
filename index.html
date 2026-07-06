@@ -286,10 +286,20 @@
             return;
           }
 
+          // const compressed = base64UrlToBytes(d);
+          // const inflated = pako.inflate(compressed);
+          // const jsonText = new TextDecoder("utf-8").decode(inflated);
+          // console.log("JSON TEXT:", jsonText);
+
           const compressed = base64UrlToBytes(d);
+          console.log("compressed length:", compressed.length);
+
           const inflated = pako.inflate(compressed);
+          console.log("inflated length:", inflated.length);
+          console.log("inflated bytes:", inflated);
+
           const jsonText = new TextDecoder("utf-8").decode(inflated);
-          console.log("JSON TEXT:", jsonText);
+          console.log("JSON TEXT:", JSON.stringify(jsonText));
           const pkg = JSON.parse(jsonText);
 
           document.getElementById("rawData").textContent = JSON.stringify(
